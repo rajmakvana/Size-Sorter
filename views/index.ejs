@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Sort Meesho PDF order labels by clothing size." />
+    <title>Size Sorter | Meesho PDF Tools</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <nav class="topbar" aria-label="Main navigation">
+        <a class="brand" href="/" aria-label="Size Sorter home">
+          <span class="brand-mark" aria-hidden="true">↗</span>
+          <span>size<span class="brand-accent">sorter</span></span>
+        </a>
+        <span class="topbar-note">Meesho label utility</span>
+      </nav>
+
+      <section class="hero" aria-labelledby="page-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span></span> PDF workflow, simplified</p>
+          <h1 id="page-title">Sort your labels.<br /><em>Keep every page.</em></h1>
+          <p class="hero-text">Upload a Meesho order-label PDF and get the same pages arranged by clothing size, ready for packing.</p>
+        </div>
+        <div class="order-note" aria-label="Sort order">
+          <span class="order-label">Sort order</span>
+          <strong>S <i>›</i> M <i>›</i> L <i>›</i> XL <i>›</i> XXL</strong>
+          <small>Unknown pages go last</small>
+        </div>
+      </section>
+
+      <section class="workspace" aria-label="PDF sorter">
+        <form id="upload-form" class="upload-card">
+          <div class="card-heading">
+            <div>
+              <p class="card-kicker">01 / Upload</p>
+              <h2>Choose a PDF to sort</h2>
+            </div>
+            <span class="file-limit">PDF · max 50 MB</span>
+          </div>
+
+          <label id="drop-zone" class="drop-zone" for="pdf-input" tabindex="0">
+            <input id="pdf-input" name="pdf" type="file" accept="application/pdf,.pdf" />
+            <span class="upload-icon" aria-hidden="true">↑</span>
+            <span class="drop-title">Drop your PDF here</span>
+            <span class="drop-subtitle">or <b>browse files</b> from your device</span>
+            <span id="file-name" class="selected-file" hidden></span>
+          </label>
+
+          <button id="sort-button" class="primary-button" type="submit" disabled>
+            <span>Sort PDF</span><span aria-hidden="true">→</span>
+          </button>
+          <p class="privacy-note"><span aria-hidden="true">⌁</span> Your file is processed in memory and removed after the job expires.</p>
+        </form>
+
+        <section id="progress-panel" class="status-card" hidden aria-live="polite">
+          <div class="status-topline">
+            <div>
+              <p class="card-kicker">02 / Processing</p>
+              <h2 id="progress-title">Preparing your PDF</h2>
+            </div>
+            <strong id="progress-percent">0%</strong>
+          </div>
+          <div class="progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Sorting progress">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+          <div class="status-detail">
+            <span id="progress-message">Waiting to start...</span>
+            <span id="progress-pages"></span>
+          </div>
+        </section>
+
+        <section id="result-panel" class="result-card" hidden aria-live="polite">
+          <div class="success-icon" aria-hidden="true">✓</div>
+          <div class="result-copy">
+            <p class="card-kicker">03 / Ready</p>
+            <h2>Your sorted PDF is ready</h2>
+            <p id="result-summary"></p>
+          </div>
+          <div class="result-actions">
+            <a id="download-link" class="download-button" href="#" download>Download PDF <span aria-hidden="true">↓</span></a>
+            <button id="sort-another" class="secondary-button" type="button">Sort another PDF <span aria-hidden="true">↗</span></button>
+          </div>
+        </section>
+
+        <section id="error-panel" class="error-card" hidden role="alert">
+          <div class="error-icon" aria-hidden="true">!</div>
+          <div>
+            <p class="card-kicker">Something went wrong</p>
+            <h2 id="error-message">We could not sort that file.</h2>
+            <button id="try-again" class="text-button" type="button">Try another PDF <span aria-hidden="true">↗</span></button>
+          </div>
+        </section>
+      </section>
+
+      <footer class="footer">
+        <span>Original page content stays untouched.</span>
+        <span>Built for focused fulfilment.</span>
+      </footer>
+    </main>
+    <script src="/app.js" defer></script>
+  </body>
+</html>

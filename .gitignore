@@ -1,0 +1,4 @@
+node_modules/
+dist/
+*.sorted.pdf
+npm-debug.log*
