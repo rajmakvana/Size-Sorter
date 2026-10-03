@@ -26,12 +26,12 @@ export async function sortPdf(
     phase: "extracting",
     current: 0,
     total: 0,
-    percent: 5,
+    percent: 10,
     message: "Opening PDF...",
   });
 
   const extractedPages = await extractPageTexts(sourcePdf, ({ pageNumber, totalPages }) => {
-    const percent = 5 + Math.round((pageNumber / totalPages) * 75);
+    const percent = 10 + Math.round((pageNumber / totalPages) * 70);
     onProgress?.({
       phase: "extracting",
       current: pageNumber,

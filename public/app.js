@@ -1,6 +1,7 @@
 const form = document.querySelector("#upload-form");
 const input = document.querySelector("#pdf-input");
 const dropZone = document.querySelector("#drop-zone");
+const dropTitle = document.querySelector("#drop-title");
 const fileName = document.querySelector("#file-name");
 const sortButton = document.querySelector("#sort-button");
 const progressPanel = document.querySelector("#progress-panel");
@@ -21,6 +22,7 @@ const sortAnother = document.querySelector("#sort-another");
 let selectedFile = null;
 let pollTimer = null;
 let isBusy = false;
+let displayedPercent = 0;
 const SAVED_JOB_KEY = "meesho-sorter-job";
 
 function setBusy(busy) {
@@ -29,6 +31,7 @@ function setBusy(busy) {
   dropZone.classList.toggle("is-processing", busy);
   dropZone.setAttribute("aria-disabled", String(busy));
   dropZone.tabIndex = busy ? -1 : 0;
+  dropTitle.textContent = busy ? "Sorting in progress — upload locked" : "Drop your PDF here";
 }
 
 function chooseFile(file) {
@@ -50,7 +53,9 @@ function showPanel(panel) {
 }
 
 function setProgress(progress) {
-  const percent = Math.max(0, Math.min(100, Math.round(progress.percent || 0)));
+  const requestedPercent = Math.max(0, Math.min(100, Math.round(progress.percent || 0)));
+  displayedPercent = Math.max(displayedPercent, requestedPercent);
+  const percent = displayedPercent;
   progressTitle.textContent = progress.phase === "extracting" ? "Reading your PDF" : progress.phase === "detecting" ? "Finding sizes" : "Building sorted PDF";
   progressMessage.textContent = progress.message;
   progressPages.textContent = progress.total ? `${progress.current} / ${progress.total} pages` : "";
@@ -71,6 +76,7 @@ function resetForAnotherFile() {
   if (pollTimer) window.clearTimeout(pollTimer);
   localStorage.removeItem(SAVED_JOB_KEY);
   setBusy(false);
+  displayedPercent = 0;
   selectedFile = null;
   input.value = "";
   fileName.hidden = true;
@@ -81,10 +87,19 @@ function resetForAnotherFile() {
   dropZone.focus();
 }
 
+async function readApiResponse(response) {
+  const bodyText = await response.text();
+  try {
+    return bodyText ? JSON.parse(bodyText) : {};
+  } catch {
+    throw new Error("The deployed server returned an HTML page instead of an API response. Redeploy the latest code on Render.");
+  }
+}
+
 async function watchJob(jobId, connectionRetries = 0) {
   try {
     const response = await fetch(`/api/jobs/${encodeURIComponent(jobId)}`, { cache: "no-store" });
-    const job = await response.json();
+    const job = await readApiResponse(response);
     if (response.status === 404) {
       localStorage.removeItem(SAVED_JOB_KEY);
       resetForAnotherFile();
@@ -106,7 +121,7 @@ async function watchJob(jobId, connectionRetries = 0) {
       sortButton.disabled = false;
       return;
     }
-    pollTimer = window.setTimeout(() => watchJob(jobId), 500);
+    pollTimer = window.setTimeout(() => watchJob(jobId), 100);
   } catch (error) {
     if (connectionRetries < 5) {
       pollTimer = window.setTimeout(() => watchJob(jobId, connectionRetries + 1), 1000);
@@ -118,7 +133,7 @@ async function watchJob(jobId, connectionRetries = 0) {
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
-  if (!selectedFile) return;
+  if (!selectedFile || isBusy) return;
   if (!selectedFile.name.toLowerCase().endsWith(".pdf")) {
     showError("Please choose a PDF file.");
     return;
@@ -130,6 +145,7 @@ form.addEventListener("submit", (event) => {
 
   sortButton.disabled = true;
   setBusy(true);
+  displayedPercent = 0;
   showPanel(progressPanel);
   setProgress({ phase: "extracting", current: 0, total: 0, percent: 0, message: "Uploading your PDF..." });
 
@@ -142,7 +158,10 @@ form.addEventListener("submit", (event) => {
   });
   request.addEventListener("load", () => {
     let body;
-    try { body = JSON.parse(request.responseText); } catch { body = {}; }
+    try { body = request.responseText ? JSON.parse(request.responseText) : {}; } catch {
+      showError("The deployed server returned an HTML page instead of an upload response. Redeploy the latest code on Render.");
+      return;
+    }
     if (request.status < 200 || request.status >= 300) {
       showError(body.error || "The upload could not be processed.");
       return;

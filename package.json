@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "start": "node dist/server.js",
-    "web": "tsx src/server.ts",
+    "web": "npm run build && node dist/server.js",
     "cli": "node dist/cli.js",
     "sort": "tsx src/cli.ts",
     "test": "tsx --test test/**/*.test.ts",

@@ -47,6 +47,7 @@ h2 { margin-bottom: 0; font-family: "Space Grotesk", sans-serif; font-size: 24px
 .drop-zone:hover, .drop-zone.is-dragging, .drop-zone.has-file { border-color: var(--green); background: #f3faee; }
 .drop-zone.is-dragging { transform: scale(1.01); }
 .drop-zone.is-processing { cursor: wait; opacity: .62; }
+.drop-zone.is-processing { pointer-events: none; }
 .drop-zone.is-processing:hover { border-color: #afc4b6; background: #fbfdf9; transform: none; }
 .drop-zone input { display: none; }
 .upload-icon { display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 17px; border-radius: 50%; background: var(--lime); color: var(--green-dark); font-size: 25px; font-weight: 500; }
@@ -62,7 +63,7 @@ h2 { margin-bottom: 0; font-family: "Space Grotesk", sans-serif; font-size: 24px
 .status-card { padding: 30px 32px; }
 .status-topline strong { color: var(--green); font-family: "DM Mono", monospace; font-size: 23px; font-weight: 500; }
 .progress-track { height: 9px; overflow: hidden; margin: 31px 0 12px; border-radius: 10px; background: #e8eee8; }
-.progress-fill { width: 0; height: 100%; border-radius: inherit; background: var(--green); transition: width .35s ease; }
+.progress-fill { width: 0; height: 100%; border-radius: inherit; background: var(--green); transition: width .45s ease; }
 .status-detail { display: flex; justify-content: space-between; color: var(--muted); font-family: "DM Mono", monospace; font-size: 10px; }
 .result-card, .error-card { display: flex; align-items: center; gap: 20px; padding: 25px 28px; }
 .success-icon, .error-icon { display: grid; flex: 0 0 auto; place-items: center; width: 45px; height: 45px; border-radius: 50%; font-size: 24px; }

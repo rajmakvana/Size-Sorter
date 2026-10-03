@@ -4,7 +4,8 @@ import { basename, extname, resolve } from "node:path";
 import express, { type Request, type Response, type NextFunction } from "express";
 import helmet from "helmet";
 import multer from "multer";
-import { sortPdf, type SortProgress } from "./sort-pdf.js";
+import { type SortProgress } from "./sort-pdf.js";
+import { sortPdfInWorker } from "./sort-worker-client.js";
 import { SORTED_SIZES, type Size } from "./types.js";
 
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
@@ -85,7 +86,7 @@ async function processJob(job: Job, sourcePdf: Uint8Array): Promise<void> {
   publish(job, "progress");
 
   try {
-    const result = await sortPdf(sourcePdf, (progress) => {
+    const result = await sortPdfInWorker(sourcePdf, (progress) => {
       job.progress = progress;
       publish(job, "progress");
     });
@@ -237,6 +238,10 @@ export function createApp(): express.Express {
       "Content-Length": String(job.result.byteLength),
     });
     response.send(Buffer.from(job.result));
+  });
+
+  app.use("/api", (_request, response) => {
+    response.status(404).json({ error: "API endpoint not found." });
   });
 
   app.use((error: unknown, _request: Request, response: Response, _next: NextFunction) => {

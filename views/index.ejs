@@ -4,6 +4,11 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Sort Meesho PDF order labels by clothing size." />
+    <meta name="theme-color" content="#18231f" />
+    <meta property="og:title" content="Size Sorter | Meesho PDF Tools" />
+    <meta property="og:description" content="Sort Meesho order-label PDF pages by clothing size." />
+    <meta property="og:image" content="/favicon.svg" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Size Sorter | Meesho PDF Tools</title>
     <link rel="stylesheet" href="/styles.css" />
   </head>
@@ -43,7 +48,7 @@
           <label id="drop-zone" class="drop-zone" for="pdf-input" tabindex="0">
             <input id="pdf-input" name="pdf" type="file" accept="application/pdf,.pdf" />
             <span class="upload-icon" aria-hidden="true">↑</span>
-            <span class="drop-title">Drop your PDF here</span>
+            <span id="drop-title" class="drop-title">Drop your PDF here</span>
             <span class="drop-subtitle">or <b>browse files</b> from your device</span>
             <span id="file-name" class="selected-file" hidden></span>
           </label>
