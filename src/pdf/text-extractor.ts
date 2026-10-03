@@ -46,17 +46,31 @@ export async function extractPageTexts(
   const pages: ExtractedPageText[] = [];
 
   try {
-    for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
-      const page = await document.getPage(pageNumber);
-      const content = await page.getTextContent();
-      const text = content.items
-        .map((item) => `${getItemText(item)}${itemHasLineBreak(item) ? "\n" : " "}`)
-        .join("")
-        .trim();
+    const pageConcurrency = 4;
+    for (let firstPage = 1; firstPage <= document.numPages; firstPage += pageConcurrency) {
+      const pageNumbers = Array.from(
+        { length: Math.min(pageConcurrency, document.numPages - firstPage + 1) },
+        (_, offset) => firstPage + offset,
+      );
+      const batch = await Promise.all(pageNumbers.map(async (pageNumber) => {
+        const page = await document.getPage(pageNumber);
+        try {
+          const content = await page.getTextContent();
+          const text = content.items
+            .map((item) => `${getItemText(item)}${itemHasLineBreak(item) ? "\n" : " "}`)
+            .join("")
+            .trim();
+          return { pageNumber, text };
+        } finally {
+          page.cleanup();
+        }
+      }));
 
-      pages.push({ pageNumber, text });
-      onProgress?.({ pageNumber, totalPages: document.numPages });
-      page.cleanup();
+      // Promise.all preserves pageNumbers order, so the original page order remains intact.
+      for (const page of batch) {
+        pages.push(page);
+        onProgress?.({ pageNumber: page.pageNumber, totalPages: document.numPages });
+      }
     }
   } finally {
     await document.destroy();
