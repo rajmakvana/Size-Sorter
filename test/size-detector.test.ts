@@ -11,6 +11,15 @@ test("detects a size from the product details table", () => {
   assert.deepEqual(detectPageSize(page), { pageNumber: 4, size: "M" });
 });
 
+test("detects the SKU number before the size field", () => {
+  const page = {
+    pageNumber: 8,
+    text: "Product Details SKU Size Qty Color Order No. Grey Shirt_14 XXL 1 Grey 12345",
+  };
+
+  assert.deepEqual(detectPageSize(page), { pageNumber: 8, size: "XXL", skuNumber: 14 });
+});
+
 test("accepts lowercase sizes and prefers an explicit size value", () => {
   const page = {
     pageNumber: 2,

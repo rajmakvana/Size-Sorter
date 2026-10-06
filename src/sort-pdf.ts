@@ -46,7 +46,7 @@ export async function sortPdf(
     current: extractedPages.length,
     total: extractedPages.length,
     percent: 88,
-    message: "Detecting sizes...",
+    message: "Detecting SKU numbers and sizes...",
   });
   const detectedPages = detectPageSizes(extractedPages);
   const sorted = sortPages(detectedPages);

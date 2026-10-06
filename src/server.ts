@@ -6,11 +6,14 @@ import helmet from "helmet";
 import multer from "multer";
 import { type SortProgress } from "./sort-pdf.js";
 import { sortPdfInWorker } from "./sort-worker-client.js";
+import type { SkuSizeCounts } from "./page-sorter.js";
 import { SORTED_SIZES, type Size } from "./types.js";
 
 const MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 const JOB_TTL_MS = 30 * 60 * 1000;
 const PORT = Number(process.env.PORT ?? 3000);
+const HOST = "0.0.0.0";
+const NETWORK_HOST = process.env.NETWORK_HOST ?? "192.168.1.86";
 
 type JobStatus = "queued" | "processing" | "complete" | "failed";
 
@@ -21,8 +24,10 @@ interface Job {
   originalName: string;
   result?: Uint8Array;
   counts?: Record<Size, number>;
+  skuCounts?: SkuSizeCounts;
   totalPages?: number;
   unknownPages?: number;
+  unknownSkuPages?: number;
   error?: string;
   listeners: Set<Response>;
 }
@@ -53,8 +58,10 @@ function publicJob(job: Job): Record<string, unknown> {
     progress: job.progress,
     originalName: job.originalName,
     counts: job.counts,
+    skuCounts: job.skuCounts,
     totalPages: job.totalPages,
     unknownPages: job.unknownPages,
+    unknownSkuPages: job.unknownSkuPages,
     error: job.error,
   };
 }
@@ -94,8 +101,10 @@ async function processJob(job: Job, sourcePdf: Uint8Array): Promise<void> {
     job.status = "complete";
     job.result = result.sortedPdf;
     job.counts = result.sorted.counts;
+    job.skuCounts = result.sorted.skuCounts;
     job.totalPages = result.detectedPages.length;
     job.unknownPages = result.sorted.unknownPages.length;
+    job.unknownSkuPages = result.sorted.unknownSkuPages.length;
     job.progress = {
       phase: "complete",
       current: result.detectedPages.length,
@@ -264,7 +273,8 @@ const isMainModule = process.argv[1]
   : false;
 
 if (isMainModule) {
-  createApp().listen(PORT, () => {
+  createApp().listen(PORT, HOST, () => {
     console.log(`Meesho PDF Size Sorter running at http://localhost:${PORT}`);
+    console.log(`Network: http://${NETWORK_HOST}:${PORT}`);
   });
 }

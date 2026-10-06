@@ -1,7 +1,7 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, resolve } from "node:path";
 import { sortPdf } from "./sort-pdf.js";
-import { SORTED_SIZES } from "./types.js";
+import { SORTED_SIZES, SORTED_SKU_NUMBERS } from "./types.js";
 
 function defaultOutputPath(inputPath: string): string {
   const extension = extname(inputPath) || ".pdf";
@@ -34,6 +34,12 @@ async function main(): Promise<void> {
   for (const size of SORTED_SIZES) {
     console.log(`${size.padEnd(3)} ${result.sorted.counts[size]}`);
   }
+  console.log("SKU / size counts:");
+  for (const skuNumber of SORTED_SKU_NUMBERS) {
+    const sizeCounts = SORTED_SIZES.map((size) => `${size} ${result.sorted.skuCounts[skuNumber][size]}`).join("  ");
+    console.log(`${String(skuNumber).padEnd(3)} ${sizeCounts}`);
+  }
+  console.log(`Unknown SKU ${result.sorted.unknownSkuPages.length}`);
   console.log(`Unknown ${result.sorted.unknownPages.length}`);
   if (result.sorted.unknownPages.length > 0) {
     console.log("Unknown page details:");

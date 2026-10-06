@@ -10,7 +10,7 @@
     <meta property="og:image" content="/favicon.svg" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>Size Sorter | Meesho PDF Tools</title>
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="/styles.css?v=4" />
   </head>
   <body>
     <main class="shell">
@@ -77,11 +77,27 @@
         </section>
 
         <section id="result-panel" class="result-card" hidden aria-live="polite">
-          <div class="success-icon" aria-hidden="true">✓</div>
-          <div class="result-copy">
-            <p class="card-kicker">03 / Ready</p>
-            <h2>Your sorted PDF is ready</h2>
-            <p id="result-summary"></p>
+          <div class="result-heading">
+            <div class="success-icon" aria-hidden="true">✓</div>
+            <div class="result-copy">
+              <p class="card-kicker">03 / Ready</p>
+              <h2>Your sorted PDF is ready</h2>
+              <p id="result-summary"></p>
+            </div>
+          </div>
+          <div class="result-matrix">
+            <div class="matrix-heading">
+              <p class="card-kicker">SKU / Size Breakdown</p>
+              <span id="unknown-sku-summary"></span>
+            </div>
+            <div class="table-scroll">
+              <table>
+                <thead>
+                  <tr><th>SKU</th><th>S</th><th>M</th><th>L</th><th>XL</th><th>XXL</th></tr>
+                </thead>
+                <tbody id="sku-count-body"></tbody>
+              </table>
+            </div>
           </div>
           <div class="result-actions">
             <a id="download-link" class="download-button" href="#" download>Download PDF <span aria-hidden="true">↓</span></a>
@@ -104,6 +120,6 @@
         <span>Built for focused fulfilment.</span>
       </footer>
     </main>
-    <script src="/app.js" defer></script>
+    <script src="/app.js?v=4" defer></script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 # Meesho PDF Size Sorter
 
-Web and CLI tool that extracts Meesho label text, detects clothing sizes from the `Product Details` / `SKU Size Qty Color Order No.` table, and writes a PDF with the original pages reordered as `S`, `M`, `L`, `XL`, `XXL`, then `Unknown`.
+Web and CLI tool that extracts Meesho label text, detects SKU numbers and clothing sizes from the `Product Details` / `SKU Size Qty Color Order No.` table, and writes a PDF with the original pages reordered by SKU `11` through `18`, then by size `S`, `M`, `L`, `XL`, `XXL`. Pages without a recognized SKU number go last.
 
 ## Requirements
 
@@ -21,7 +21,7 @@ Start the upload website:
 npm start
 ```
 
-Open `http://localhost:3000`. Set `PORT` to use a different port. The web app accepts one PDF up to 50 MB, shows upload and sorting progress, and provides the sorted PDF when complete.
+Open `http://localhost:3000`. Set `PORT` to use a different port. The web app accepts one PDF up to 50 MB, shows upload and sorting progress, displays an SKU/size count matrix, and provides the sorted PDF when complete.
 
 For the command line:
 

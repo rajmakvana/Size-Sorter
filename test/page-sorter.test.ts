@@ -16,3 +16,17 @@ test("sorts S through XXL and puts unknown pages last", () => {
   assert.deepEqual(result.counts, { S: 1, M: 1, L: 1, XL: 1, XXL: 1 });
   assert.deepEqual(result.unknownPages.map((page) => page.pageNumber), [3]);
 });
+
+test("sorts by SKU number first and size within each SKU", () => {
+  const result = sortPages([
+    { pageNumber: 1, skuNumber: 12, size: "S" },
+    { pageNumber: 2, skuNumber: 11, size: "XL" },
+    { pageNumber: 3, skuNumber: 11, size: "S" },
+    { pageNumber: 4, size: "M" },
+  ]);
+
+  assert.deepEqual(result.orderedPages.map((page) => page.pageNumber), [3, 2, 1, 4]);
+  assert.equal(result.skuCounts[11].S, 1);
+  assert.equal(result.skuCounts[11].XL, 1);
+  assert.deepEqual(result.unknownSkuPages.map((page) => page.pageNumber), [4]);
+});

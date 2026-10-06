@@ -14,6 +14,8 @@ const progressPercent = document.querySelector("#progress-percent");
 const progressFill = document.querySelector("#progress-fill");
 const progressBar = document.querySelector(".progress-track");
 const resultSummary = document.querySelector("#result-summary");
+const skuCountBody = document.querySelector("#sku-count-body");
+const unknownSkuSummary = document.querySelector("#unknown-sku-summary");
 const downloadLink = document.querySelector("#download-link");
 const errorMessage = document.querySelector("#error-message");
 const tryAgain = document.querySelector("#try-again");
@@ -87,6 +89,27 @@ function resetForAnotherFile() {
   dropZone.focus();
 }
 
+function renderSkuMatrix(skuCounts, unknownSkuPages) {
+  skuCountBody.replaceChildren();
+  const sizes = ["S", "M", "L", "XL", "XXL"];
+  for (const skuNumber of [11, 12, 13, 14, 15, 16, 17, 18]) {
+    const row = document.createElement("tr");
+    const label = document.createElement("th");
+    label.scope = "row";
+    label.textContent = String(skuNumber);
+    row.append(label);
+    for (const size of sizes) {
+      const cell = document.createElement("td");
+      cell.textContent = String(skuCounts?.[skuNumber]?.[size] ?? 0);
+      row.append(cell);
+    }
+    skuCountBody.append(row);
+  }
+  unknownSkuSummary.textContent = unknownSkuPages > 0
+    ? `${unknownSkuPages} page${unknownSkuPages === 1 ? "" : "s"} without SKU 11–18`
+    : "All pages matched SKU 11-18";
+}
+
 async function readApiResponse(response) {
   const bodyText = await response.text();
   try {
@@ -114,7 +137,8 @@ async function watchJob(jobId, connectionRetries = 0) {
       return;
     }
     if (job.status === "complete") {
-      resultSummary.textContent = `${job.totalPages} pages sorted · ${job.unknownPages} unknown`;
+      resultSummary.textContent = `${job.totalPages} pages sorted · ${job.unknownPages} unknown size · ${job.unknownSkuPages} unknown SKU`;
+      renderSkuMatrix(job.skuCounts, job.unknownSkuPages);
       downloadLink.href = `/api/jobs/${encodeURIComponent(job.id)}/download`;
       showPanel(resultPanel);
       setBusy(false);
